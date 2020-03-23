@@ -1,14 +1,11 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux';
-import * as action from './../actions/index'
+import * as actions from './../actions/index'
 
 class TaskForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: "",
-      name: "",
-      status: false
     };
   }
 
@@ -41,10 +38,7 @@ class TaskForm extends Component {
   handleChange = e => {
     var target = e.target;
     var name = target.name;
-    var value = target.value;
-    if (name === "status") {
-      value = target.value === "true" ? true : false;
-    }
+    var value = target.type === 'checkbox' ? target.checked : target.value;    
     this.setState({
       [name]: value
     });
@@ -139,7 +133,10 @@ const mapStateToProps = (state) =>{
 const mapDispatchToProps = (dispatch, props) =>{
   return {
       onAddTask: (task) =>{
-        dispatch(action.addTask(task));
+        dispatch(actions.addTask(task));
+      },
+      onCloseFrom: () =>{
+        dispatch(actions.closeFrom());
       }
   }
 }

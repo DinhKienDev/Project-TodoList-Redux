@@ -10,3 +10,25 @@ export const addTask = (task) =>{
         task
     }
 }
+export const toggleFrom = () =>{
+    return {
+        type: types.TOGGLE_FORM,
+    }
+}
+export const closeFrom = () =>{
+    return {
+        type: types.CLOSE_FORM,
+    }
+}
+export const openFrom = () =>{
+    return {
+        type: types.OPEN_FORM,
+    }
+}
+
+export const updateStatus = (id) =>{
+    return {
+        type: types.UPDATE_STATUS,
+        id // id: id
+    }
+}

@@ -3,11 +3,12 @@ import "./App.css";
 import TaskForm from "./components/TaskForm";
 import Control from "./components/Control";
 import TaskList from "./components/TaskList";
+import {connect} from 'react-redux';
+import * as actions from './actions/index'
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isShowForm: false,
       taskEditing: null,
       filterName: "",
       filterStatus: "-1",
@@ -30,17 +31,18 @@ class App extends Component {
   
 
   onToggleFrom = () => {
-    if (this.state.isShowForm && this.state.taskEditing !== null) {
-      this.setState({
-        isShowForm: true,
-        taskEditing: null
-      });
-    } else {
-      this.setState({
-        isShowForm: !this.state.isShowForm,
-        taskEditing: null
-      });
-    }
+    // if (this.state.isShowForm && this.state.taskEditing !== null) {
+    //   this.setState({
+    //     isShowForm: true,
+    //     taskEditing: null
+    //   });
+    // } else {
+    //   this.setState({
+    //     isShowForm: !this.state.isShowForm,
+    //     taskEditing: null
+    //   });
+    // }
+    this.props.onToggleFrom();
   };
 
   onCloseFrom = () => {
@@ -49,47 +51,47 @@ class App extends Component {
     });
   };
 
-  onSubmit = data => {
-    var { tasks } = this.state;
-    if (data.id === "") {
-      data.id = this.generateID();
-      tasks.push(data);
-    } else {
-      //editing
-      var index = this.findIndex(data.id);
-      tasks[index] = data;
-    }
-    this.setState({
-      tasks: tasks,
-      taskEditing: null
-    });
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  };
+  // onSubmit = data => {
+  //   var { tasks } = this.state;
+  //   if (data.id === "") {
+  //     data.id = this.generateID();
+  //     tasks.push(data);
+  //   } else {
+  //     //editing
+  //     var index = this.findIndex(data.id);
+  //     tasks[index] = data;
+  //   }
+  //   this.setState({
+  //     tasks: tasks,
+  //     taskEditing: null
+  //   });
+  //   localStorage.setItem("tasks", JSON.stringify(tasks));
+  // };
 
-  onUpdateStatus = id => {
-    var { tasks } = this.state;
-    var index = this.findIndex(id);
-    // var index = findIndex(tasks, task => {
-    //   return task.id === id;
-    // });
-    if (index !== -1) {
-      tasks[index].status = !tasks[index].status;
-      this.setState({
-        tasks: tasks
-      });
-      localStorage.setItem("tasks", JSON.stringify(tasks));
-    }
-  };
-  findIndex = id => {
-    var { tasks } = this.state;
-    var result = -1;
-    tasks.forEach((task, index) => {
-      if (task.id === id) {
-        result = index;
-      }
-    });
-    return result;
-  };
+  // onUpdateStatus = id => {
+  //   var { tasks } = this.state;
+  //   var index = this.findIndex(id);
+  //   // var index = findIndex(tasks, task => {
+  //   //   return task.id === id;
+  //   // });
+  //   if (index !== -1) {
+  //     tasks[index].status = !tasks[index].status;
+  //     this.setState({
+  //       tasks: tasks
+  //     });
+  //     localStorage.setItem("tasks", JSON.stringify(tasks));
+  //   }
+  // };
+  // findIndex = id => {
+  //   var { tasks } = this.state;
+  //   var result = -1;
+  //   tasks.forEach((task, index) => {
+  //     if (task.id === id) {
+  //       result = index;
+  //     }
+  //   });
+  //   return result;
+  // };
 
   onDeleteData = id => {
     var { tasks } = this.state;
@@ -142,7 +144,6 @@ class App extends Component {
 
   render() {
     var {
-      isShowForm,
       taskEditing,
       // filterName,
       // filterStatus,
@@ -150,6 +151,8 @@ class App extends Component {
       sortBy,
       sortValue
     } = this.state;
+
+    var {isDisplayFrom} = this.props;
     // tasks = tasks.filter( task => {
     //   return task.name.toLowerCase().indexOf(keyword.toLowerCase()) !== -1;
     // });
@@ -189,10 +192,10 @@ class App extends Component {
     //   });
     // }
 
-    var elmTaskForm = isShowForm ? (
+    var elmTaskForm = isDisplayFrom ? (
       <TaskForm
         onCloseFrom={this.onCloseFrom}
-        onSubmit={this.onSubmit}
+        //onSubmit={this.onSubmit}
         task={taskEditing}
       />
     ) : (
@@ -205,13 +208,13 @@ class App extends Component {
         </div>
         <div className="row">
           <div
-            className={isShowForm ? "col-xs-4 col-sm-4 col-md-4 col-lg-4" : ""}
+            className={isDisplayFrom ? "col-xs-4 col-sm-4 col-md-4 col-lg-4" : ""}
           >
             {elmTaskForm}
           </div>
           <div
             className={
-              isShowForm
+              isDisplayFrom
                 ? "col-xs-8 col-sm-8 col-md-8 col-lg-8"
                 : "col-xs-12 col-sm-12 col-md-12 col-lg-12"
             }
@@ -231,7 +234,6 @@ class App extends Component {
               sortValue={sortValue}
             />
             <TaskList
-              onUpdateStatus={this.onUpdateStatus}
               onDeleteData={this.onDeleteData}
               onEditData={this.onEditData}
               onFilter={this.onFilter}
@@ -243,4 +245,19 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = (state) =>{
+  return{
+    isDisplayFrom: state.isDisplayFrom
+  }
+};
+
+const mapDispatchToProps = (dispatch, action) =>{
+  return {
+    onToggleFrom: ()=>{
+      dispatch(actions.toggleFrom());
+    },
+    
+  }
+}
+
+export default  connect(mapStateToProps, mapDispatchToProps)(App);

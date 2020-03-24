@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import * as actions from './../actions/index'
 
 class TaskItem extends Component {
@@ -9,10 +9,12 @@ class TaskItem extends Component {
 
   onDeleteData = () => {
     this.props.onDeleteData(this.props.task.id);
+    this.props.onCloseFrom();
   };
 
-  onEditData = () =>{
-    this.props.onEditData(this.props.task.id);
+  onEditData = () => {
+    this.props.onOpenForm();
+    this.props.onEditTask(this.props.task);
   }
 
   render() {
@@ -52,16 +54,28 @@ class TaskItem extends Component {
   }
 }
 
-const mapStateToProps = state =>{
+const mapStateToProps = state => {
   return {
 
   };
 }
 
-const mapDispatchToProps = (dispatch, props) =>{
+const mapDispatchToProps = (dispatch, props) => {
   return {
-    onUpdateStatus: (id) =>{
+    onUpdateStatus: (id) => {
       dispatch(actions.updateStatus(id));
+    },
+    onDeleteData: (id) => {
+      dispatch(actions.deleteTask(id));
+    },
+    onCloseFrom: () => {
+      dispatch(actions.closeFrom());
+    },
+    onOpenForm: () => {
+      dispatch(actions.openFrom());
+    },
+    onEditTask: (task) => {
+      dispatch(actions.editTask(task));
     }
   };
 }

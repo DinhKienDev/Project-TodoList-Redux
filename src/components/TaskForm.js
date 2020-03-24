@@ -6,27 +6,30 @@ class TaskForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      id: '',
+      name: '',
+      status: false
     };
   }
 
   UNSAFE_componentWillMount() {
-    if (this.props.task) {
+    if (this.props.itemEditting) {
       this.setState({
-        id: this.props.task.id,
-        name: this.props.task.name,
-        status: this.props.task.status
+        id: this.props.itemEditting.id,
+        name: this.props.itemEditting.name,
+        status: this.props.itemEditting.status
       });
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps){
-    if (nextProps && nextProps.task) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (nextProps && nextProps.itemEditting) {
       this.setState({
-        id: nextProps.task.id,
-        name: nextProps.task.name,
-        status: nextProps.task.status
+        id: nextProps.itemEditting.id,
+        name: nextProps.itemEditting.name,
+        status: nextProps.itemEditting.status
       });
-    }else if (!nextProps.task) {
+    } else if (!nextProps.itemEditting) {
       this.setState({
         id: '',
         name: '',
@@ -38,7 +41,7 @@ class TaskForm extends Component {
   handleChange = e => {
     var target = e.target;
     var name = target.name;
-    var value = target.type === 'checkbox' ? target.checked : target.value;    
+    var value = target.type === 'checkbox' ? target.checked : target.value;
     this.setState({
       [name]: value
     });
@@ -65,6 +68,9 @@ class TaskForm extends Component {
     this.onCloseFrom();
   };
   render() {
+    if (!this.props.isDisplayFrom) {
+      return null
+    }
     var { id } = this.state;
     return (
       <div className="panel panel-warning">
@@ -124,20 +130,21 @@ class TaskForm extends Component {
   }
 }
 
-const mapStateToProps = (state) =>{
+const mapStateToProps = (state) => {
   return {
-
+    isDisplayFrom: state.isDisplayFrom,
+    itemEditting: state.itemEditting
   }
 };
 
-const mapDispatchToProps = (dispatch, props) =>{
+const mapDispatchToProps = (dispatch, props) => {
   return {
-      onAddTask: (task) =>{
-        dispatch(actions.addTask(task));
-      },
-      onCloseFrom: () =>{
-        dispatch(actions.closeFrom());
-      }
+    onAddTask: (task) => {
+      dispatch(actions.addTask(task));
+    },
+    onCloseFrom: () => {
+      dispatch(actions.closeFrom());
+    }
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(TaskForm);

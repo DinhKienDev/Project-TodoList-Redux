@@ -1,18 +1,14 @@
 import React, { Component } from "react";
 import "./App.css";
 import TaskForm from "./components/TaskForm";
-import Control from "./components/Control";
+import Control from "./components/TaskControl";
 import TaskList from "./components/TaskList";
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import * as actions from './actions/index'
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      taskEditing: null,
-      filterName: "",
-      filterStatus: "-1",
-      keyword: "",
       sortBy: "name",
       sortValue: 1
     };
@@ -28,7 +24,7 @@ class App extends Component {
   // }
 
   // creat random id
-  
+
 
   onToggleFrom = () => {
     // if (this.state.isShowForm && this.state.taskEditing !== null) {
@@ -42,14 +38,25 @@ class App extends Component {
     //     taskEditing: null
     //   });
     // }
-    this.props.onToggleFrom();
-  };
+    var {itemEditting} = this.props;
+    if (itemEditting && itemEditting.id !== '') {
+      this.props.onOpenForm();
+    }else{
+      this.props.onToggleFrom();
+    }
 
-  onCloseFrom = () => {
-    this.setState({
-      isShowForm: false
+    this.props.onClearTask({
+      id: '',
+      name: '',
+      staus: false
     });
   };
+
+  // onCloseFrom = () => {
+  //   this.setState({
+  //     isShowForm: false
+  //   });
+  // };
 
   // onSubmit = data => {
   //   var { tasks } = this.state;
@@ -93,66 +100,66 @@ class App extends Component {
   //   return result;
   // };
 
-  onDeleteData = id => {
-    var { tasks } = this.state;
-    var index = this.findIndex(id);
-    if (index !== -1) {
-      tasks.splice(index, 1);
-      this.setState({
-        tasks: tasks
-      });
-      localStorage.setItem("tasks", JSON.stringify(tasks));
-    }
-    this.onCloseFrom();
-  };
+  // onDeleteData = id => {
+  //   var { tasks } = this.state;
+  //   var index = this.findIndex(id);
+  //   if (index !== -1) {
+  //     tasks.splice(index, 1);
+  //     this.setState({
+  //       tasks: tasks
+  //     });
+  //     localStorage.setItem("tasks", JSON.stringify(tasks));
+  //   }
+  //   this.onCloseFrom();
+  // };
 
-  onShowFrom = () => {
-    this.setState({
-      isShowForm: true
-    });
-  };
-  onEditData = id => {
-    var { tasks } = this.state;
-    var index = this.findIndex(id);
-    var taskEditing = tasks[index];
-    this.setState({
-      taskEditing: taskEditing
-    });
-    this.onShowFrom();
-  };
+  // onShowFrom = () => {
+  //   this.setState({
+  //     isShowForm: true
+  //   });
+  // };
+  // onEditData = id => {
+  //   var { tasks } = this.state;
+  //   var index = this.findIndex(id);
+  //   var taskEditing = tasks[index];
+  //   this.setState({
+  //     taskEditing: taskEditing
+  //   });
+  //   this.onShowFrom();
+  // };
 
-  onFilter = (filterName, filterStatus) => {
-    filterStatus = parseInt(filterStatus, 10);
-    this.setState({
-      filterName: filterName,
-      filterStatus: filterStatus
-    });
-  };
+  // onFilter = (filterName, filterStatus) => {
+  //   filterStatus = parseInt(filterStatus, 10);
+  //   this.setState({
+  //     filterName: filterName,
+  //     filterStatus: filterStatus
+  //   });
+  // };
 
-  onSearch = keyword => {
-    this.setState({
-      keyword: keyword
-    });
-  };
+  // onSearch = keyword => {
+  //   this.setState({
+  //     keyword: keyword
+  //   });
+  // };
 
-  onSort = (sortBy, sortValue) => {
-    this.setState({
-      sortBy: sortBy,
-      sortValue: sortValue
-    });
-  };
+  // onSort = (sortBy, sortValue) => {
+  //   this.setState({
+  //     sortBy: sortBy,
+  //     sortValue: sortValue
+  //   });
+  // };
 
   render() {
-    var {
-      taskEditing,
-      // filterName,
-      // filterStatus,
-      // keyword,
-      sortBy,
-      sortValue
-    } = this.state;
+    // var {
+    //   //taskEditing,
+    //   // filterName,
+    //   // filterStatus,
+    //   // keyword,
+    //   // sortBy,
+    //   // sortValue
+    // } = this.state;
 
-    var {isDisplayFrom} = this.props;
+    var { isDisplayFrom } = this.props;
     // tasks = tasks.filter( task => {
     //   return task.name.toLowerCase().indexOf(keyword.toLowerCase()) !== -1;
     // });
@@ -170,8 +177,8 @@ class App extends Component {
     //     return task.status === (parseInt(filterStatus, 10) === 1 ? true : false);
     //   }
     // });
-    
-    
+
+
     // if (keyword) {
     //   tasks = tasks.filter(task => {
     //     return task.name.toLowerCase().indexOf(keyword) !== -1;
@@ -192,15 +199,14 @@ class App extends Component {
     //   });
     // }
 
-    var elmTaskForm = isDisplayFrom ? (
-      <TaskForm
-        onCloseFrom={this.onCloseFrom}
-        //onSubmit={this.onSubmit}
-        task={taskEditing}
-      />
-    ) : (
-      ""
-    );
+    // var elmTaskForm = isDisplayFrom === true ? (
+    //   <TaskForm
+    //     //onSubmit={this.onSubmit}
+    //     task={taskEditing}
+    //   />
+    // ) : (
+    //     ""
+    //   );
     return (
       <div className="container">
         <div className="text-center">
@@ -210,7 +216,8 @@ class App extends Component {
           <div
             className={isDisplayFrom ? "col-xs-4 col-sm-4 col-md-4 col-lg-4" : ""}
           >
-            {elmTaskForm}
+            <TaskForm
+            />
           </div>
           <div
             className={
@@ -228,15 +235,10 @@ class App extends Component {
             </button>
             &nbsp;
             <Control
-              onSearch={this.onSearch}
-              onSort={this.onSort}
-              sortBy={sortBy}
-              sortValue={sortValue}
+              // sortBy={sortBy}
+              // sortValue={sortValue}
             />
             <TaskList
-              onDeleteData={this.onDeleteData}
-              onEditData={this.onEditData}
-              onFilter={this.onFilter}
             />
           </div>
         </div>
@@ -245,19 +247,25 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = (state) =>{
-  return{
-    isDisplayFrom: state.isDisplayFrom
+const mapStateToProps = (state) => {
+  return {
+    isDisplayFrom: state.isDisplayFrom,
+    itemEditting: state.itemEditting
   }
 };
 
-const mapDispatchToProps = (dispatch, action) =>{
+const mapDispatchToProps = (dispatch, action) => {
   return {
-    onToggleFrom: ()=>{
+    onToggleFrom: () => {
       dispatch(actions.toggleFrom());
     },
-    
+    onClearTask: (task) => {
+      dispatch(actions.editTask(task));
+    },
+    onOpenForm: () =>{
+      dispatch(actions.openFrom());
+    },
   }
 }
 
-export default  connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
